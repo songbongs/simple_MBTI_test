@@ -265,6 +265,104 @@
         text-align: center;
       }
 
+      .start-screen {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 14px;
+        text-align: center;
+        padding: 26px 18px;
+        border-radius: 26px;
+        background: radial-gradient(circle at 20% 20%, #ffffff 0%, #f1fcfa 38%, #e4f3f1 100%);
+        border: 1px solid #d7ebe8;
+        overflow: hidden;
+      }
+
+      .start-screen::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        right: -80px;
+        top: -90px;
+        border-radius: 50%;
+        background: rgba(99, 185, 176, 0.16);
+        filter: blur(2px);
+      }
+
+      .start-screen::after {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        left: -45px;
+        bottom: -55px;
+        border-radius: 50%;
+        background: rgba(44, 108, 105, 0.12);
+      }
+
+      .start-kicker {
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        align-self: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #ffffff;
+        border: 1px solid #d5ece9;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent-dark);
+        letter-spacing: 0.03em;
+      }
+
+      .start-title {
+        position: relative;
+        z-index: 1;
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.14;
+        letter-spacing: -0.03em;
+        margin: 4px 0 2px;
+      }
+
+      .start-sub {
+        position: relative;
+        z-index: 1;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 8px;
+      }
+
+      .start-btn {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2f7f7a 0%, #63b9b0 55%, #84d4cc 100%);
+        color: #fff;
+        padding: 15px 22px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 14px 28px rgba(44, 108, 105, 0.28);
+        transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+
+      .start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 30px rgba(44, 108, 105, 0.32);
+        filter: saturate(1.08);
+      }
+
+      .start-btn:active {
+        transform: scale(0.97);
+      }
+
       @media (max-width: 420px) {
         .phone-frame {
           min-height: 82vh;
@@ -272,13 +370,23 @@
         .question {
           font-size: 20px;
         }
+        .start-title {
+          font-size: 28px;
+        }
       }
     </style>
   </head>
   <body>
     <div class="phone-frame">
-      <div class="header">
-        <div class="title">나의 진짜 성향 테스트 (MBTI 기반)</div>
+      <div class="start-screen" id="startCard">
+        <div class="start-kicker">20 QUESTIONS SNAPSHOT</div>
+        <div class="start-title">Simple MBTI Test</div>
+        <p class="start-sub">가볍게 시작하고, 더 정확하게 나를 읽어보세요.</p>
+        <button class="start-btn" id="startBtn">Test 시작하기</button>
+      </div>
+
+      <div class="header" id="header">
+        <div class="title">Simple MBTI Test</div>
         <div class="progress-wrap">
           <div class="progress-bar" id="progressBar"></div>
         </div>
@@ -891,6 +999,9 @@
 
       const progressBar = document.getElementById("progressBar");
       const statusText = document.getElementById("statusText");
+      const header = document.getElementById("header");
+      const startCard = document.getElementById("startCard");
+      const startBtn = document.getElementById("startBtn");
       const questionCard = document.getElementById("questionCard");
       const questionText = document.getElementById("questionText");
       const choiceA = document.getElementById("choiceA");
@@ -1033,6 +1144,34 @@
         questions = buildQuestionSet();
         resultCard.style.display = "none";
         loadingCard.style.display = "none";
+        startCard.style.display = "none";
+        header.style.display = "flex";
+        questionCard.style.display = "flex";
+        setQuestion(current);
+        animateIn();
+      }
+
+      function showStartScreen() {
+        resetScores();
+        current = 0;
+        questions = [];
+        progressBar.style.width = "0%";
+        statusText.textContent = `1 / 20`;
+        resultCard.style.display = "none";
+        loadingCard.style.display = "none";
+        questionCard.style.display = "none";
+        header.style.display = "none";
+        startCard.style.display = "flex";
+      }
+
+      function startTest() {
+        current = 0;
+        resetScores();
+        questions = buildQuestionSet();
+        startCard.style.display = "none";
+        resultCard.style.display = "none";
+        loadingCard.style.display = "none";
+        header.style.display = "flex";
         questionCard.style.display = "flex";
         setQuestion(current);
         animateIn();
@@ -1041,10 +1180,9 @@
       choiceA.addEventListener("click", () => handleChoice("A"));
       choiceB.addEventListener("click", () => handleChoice("B"));
       restartBtn.addEventListener("click", restart);
+      startBtn.addEventListener("click", startTest);
 
-      questions = buildQuestionSet();
-      setQuestion(current);
-      animateIn();
+      showStartScreen();
     </script>
   </body>
 </html>
